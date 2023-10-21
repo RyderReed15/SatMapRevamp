@@ -9,6 +9,7 @@ import useWindowDimensions from "../utils/Window.js";
 
 
 const TLE_INFO = require('../assets/TLE_EXAMPLE.txt');
+const EARTH_RADIUS = 6378.14; // Earth radius in km
 
 let TLE_DATA = "";
 
@@ -36,7 +37,7 @@ export default function Satellites(props) {
         drawSats(canvas, props.zoom);
     });
     return (
-        <canvas style={{ position: 'absolute', top: 0, left: 0 }} ref={canvasRef} width={width} height={height} />
+        <canvas id="satellite_canvas" style={{ position: 'absolute', top: 0, left: 0 }} ref={canvasRef} width={width} height={height} />
     );
 }
 
@@ -116,9 +117,8 @@ function transformCoords(zoom, roll, yaw, height, width) {
 
 
 
-    const earthRadius = 6378.14;
 
-    const divisor = earthRadius / (height * zoom / 200);
+    const divisor = EARTH_RADIUS / (height * zoom / 200);
 
 
     satScreenInfo = []
@@ -131,9 +131,9 @@ function transformCoords(zoom, roll, yaw, height, width) {
 
 
 
-        if (position.z >= 0 || Math.sqrt(position.x * position.x + position.y * position.y) > earthRadius) {
+        if (position.z >= 0 || Math.sqrt(position.x * position.x + position.y * position.y) > EARTH_RADIUS) {
 
-            let leo = Math.sqrt(satPositions[i].x * satPositions[i].x + satPositions[i].y * satPositions[i].y + satPositions[i].z * satPositions[i].z) - earthRadius < 2000;
+            let leo = Math.sqrt(satPositions[i].x * satPositions[i].x + satPositions[i].y * satPositions[i].y + satPositions[i].z * satPositions[i].z) - EARTH_RADIUS < 2000;
             position.x /= divisor;
             position.y /= -divisor;
 
@@ -143,6 +143,17 @@ function transformCoords(zoom, roll, yaw, height, width) {
             satScreenInfo.push({ name: satNames[i], x: position.x, y: position.y, leo: leo });
 
         }
+
+    }
+}
+
+export function handleClick(x, y) {
+    for (let i = 0; i < satScreenInfo.length; i++) {
+        if (x >= satScreenInfo[i].x && x <= satScreenInfo[i].x + 2 && y >= satScreenInfo[i].y && y <= satScreenInfo[i].y + 2) {
+
+            alert(satScreenInfo[i].name);
+        }
+
 
     }
 }
