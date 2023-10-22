@@ -1,5 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native';
-import { propagate, twoline2satrec } from 'satellite.js';
+import { StyleSheet, View } from 'react-native';
 
 import { useState, useEffect } from 'react';
 
@@ -10,11 +9,13 @@ import Satellites, { handleClick } from "./components/Satellites.js";
 
 import Earth from "./components/Earth.js";
 
-import SatelliteInfo from "./components/SatelliteInfo.js"
+import Sidebar from './components/Sidebar.js'; 
+
 
 
 
 const Stars = require("./assets/background.jpg");
+
 
 
 export default function App() {
@@ -27,6 +28,8 @@ export default function App() {
     let [mouseDown, setMouseDown] = useState(false);
     let [roll, setRoll] = useState(Math.PI / 2);
     let [yaw, setYaw] = useState(0);
+
+    
 
     const handleScroll = (e) => {
 
@@ -81,6 +84,7 @@ export default function App() {
         window.addEventListener('mouseup', handleMouseUp);
         window.addEventListener('mousemove', handleMouseMove);
 
+
         return () => {
             window.removeEventListener('wheel', handleScroll);
             window.removeEventListener('mousedown', handleMouseDown);
@@ -90,78 +94,12 @@ export default function App() {
     }, []);
 
 
+
+
     return (
         <View style={styles.container}>
 
-            <View style={styles.satInfoContainer}>
-                <SatelliteInfo />
-                <View style={{ alignSelf: 'center', height: '1px', width: '90%', backgroundColor: '#444' }} />
-                <SatelliteInfo />
-                <View style={{ alignSelf: 'center', height: '1px', width: '90%', backgroundColor: '#444' }} />
-                <SatelliteInfo />
-                <View style={{ alignSelf: 'center', height: '1px', width: '90%', backgroundColor: '#444' }} />
-                <SatelliteInfo />
-                <View style={{ alignSelf: 'center', height: '1px', width: '90%', backgroundColor: '#444' }} />
-                <SatelliteInfo />
-                <View style={{ alignSelf: 'center', height: '1px', width: '90%', backgroundColor: '#444' }} />
-                <SatelliteInfo />
-                <View style={{ alignSelf: 'center', height: '1px', width: '90%', backgroundColor: '#444' }} />
-                <View style={{ alignSelf: 'center', height: '1px', width: '90%', backgroundColor: '#444' }} />
-                <SatelliteInfo />
-                <View style={{ alignSelf: 'center', height: '1px', width: '90%', backgroundColor: '#444' }} />
-                <SatelliteInfo />
-                <View style={{ alignSelf: 'center', height: '1px', width: '90%', backgroundColor: '#444' }} />
-                <SatelliteInfo />
-                <View style={{ alignSelf: 'center', height: '1px', width: '90%', backgroundColor: '#444' }} />
-                <SatelliteInfo />
-                <View style={{ alignSelf: 'center', height: '1px', width: '90%', backgroundColor: '#444' }} />
-                <SatelliteInfo />
-                <SatelliteInfo />
-                <View style={{ alignSelf: 'center', height: '1px', width: '90%', backgroundColor: '#444' }} />
-                <SatelliteInfo />
-                <View style={{ alignSelf: 'center', height: '1px', width: '90%', backgroundColor: '#444' }} />
-                <SatelliteInfo />
-                <View style={{ alignSelf: 'center', height: '1px', width: '90%', backgroundColor: '#444' }} />
-                <SatelliteInfo />
-                <View style={{ alignSelf: 'center', height: '1px', width: '90%', backgroundColor: '#444' }} />
-                <SatelliteInfo />
-                <View style={{ alignSelf: 'center', height: '1px', width: '90%', backgroundColor: '#444' }} />
-                <SatelliteInfo />
-                <View style={{ alignSelf: 'center', height: '1px', width: '90%', backgroundColor: '#444' }} />
-                <SatelliteInfo />
-                <View style={{ alignSelf: 'center', height: '1px', width: '90%', backgroundColor: '#444' }} />
-                <SatelliteInfo />
-                <View style={{ alignSelf: 'center', height: '1px', width: '90%', backgroundColor: '#444' }} />
-                <SatelliteInfo />
-                <View style={{ alignSelf: 'center', height: '1px', width: '90%', backgroundColor: '#444' }} />
-                <SatelliteInfo />
-                <View style={{ alignSelf: 'center', height: '1px', width: '90%', backgroundColor: '#444' }} />
-                <SatelliteInfo />
-                <View style={{ alignSelf: 'center', height: '1px', width: '90%', backgroundColor: '#444' }} />
-                <SatelliteInfo />
-                <View style={{ alignSelf: 'center', height: '1px', width: '90%', backgroundColor: '#444' }} />
-                <SatelliteInfo />
-                <View style={{ alignSelf: 'center', height: '1px', width: '90%', backgroundColor: '#444' }} />
-                <SatelliteInfo />
-                <View style={{ alignSelf: 'center', height: '1px', width: '90%', backgroundColor: '#444' }} />
-                <SatelliteInfo />
-                <View style={{ alignSelf: 'center', height: '1px', width: '90%', backgroundColor: '#444' }} />
-                <SatelliteInfo />
-                <View style={{ alignSelf: 'center', height: '1px', width: '90%', backgroundColor: '#444' }} />
-                <SatelliteInfo />
-                <View style={{ alignSelf: 'center', height: '1px', width: '90%', backgroundColor: '#444' }} />
-                <SatelliteInfo />
-                <View style={{ alignSelf: 'center', height: '1px', width: '90%', backgroundColor: '#444' }} />
-                <SatelliteInfo />
-                <View style={{ alignSelf: 'center', height: '1px', width: '90%', backgroundColor: '#444' }} />
-                <SatelliteInfo />
-                <View style={{ alignSelf: 'center', height: '1px', width: '90%', backgroundColor: '#444' }} />
-                <SatelliteInfo />
-                <View style={{ alignSelf: 'center', height: '1px', width: '90%', backgroundColor: '#444' }} />
-                <SatelliteInfo />
-                <View style={{ alignSelf: 'center', height: '1px', width: '90%', backgroundColor: '#444' }} />
-                <SatelliteInfo />
-            </View>
+            <Sidebar />
 
             <Earth style={{ position: 'absolute' }} hd={hd} height={height} zoom={zoom} yaw={yaw} roll={roll} />
 
@@ -198,22 +136,5 @@ const styles = StyleSheet.create({
         borderRadius: '50%',
         overflow: 'hidden'
     },
-    satInfoContainer: {
-
-        flex: 1,
-        maxHeight: '100vh',
-        overflowY: 'scroll',
-        scrollbarWidth: 'thin',
-
-        //borderWidth: '1px',
-        borderColor: '#444',
-
-
-        zIndex: 1,
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '15%',
-        backgroundColor: '#111'
-    }
+    
 });

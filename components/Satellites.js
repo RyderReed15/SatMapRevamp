@@ -1,9 +1,8 @@
 
 import { StyleSheet, Text, View } from 'react-native';
-import { gstime, eciToEcf, propagate, twoline2satrec } from 'satellite.js';
+import { gstime, eciToEcf, propagate, twoline2satrec, eciToGeodetic, degreesLat, degreesLong } from 'satellite.js';
 
 import { useRef, useState, useEffect } from 'react';
-
 
 import useWindowDimensions from "../utils/Window.js";
 
@@ -18,7 +17,9 @@ getTLEData();
 let satPositions = [];
 let satScreenInfo = [];
 let satNames = [];
+let satInfo = [];
 
+setInterval(parseTLEs, 1000);
 
 export default function Satellites(props) {
 
@@ -41,8 +42,12 @@ export default function Satellites(props) {
     );
 }
 
-setInterval(parseTLEs, 1000);
 
+
+
+export function getSatInfo() {
+    return satInfo;
+}
 
 
 function updateView(interval) {
@@ -133,14 +138,13 @@ function transformCoords(zoom, roll, yaw, height, width) {
 
         if (position.z >= 0 || Math.sqrt(position.x * position.x + position.y * position.y) > EARTH_RADIUS) {
 
-            let leo = Math.sqrt(satPositions[i].x * satPositions[i].x + satPositions[i].y * satPositions[i].y + satPositions[i].z * satPositions[i].z) - EARTH_RADIUS < 2000;
             position.x /= divisor;
             position.y /= -divisor;
 
             position.x = Math.floor(position.x + width / 2);
             position.y = Math.floor(position.y + height / 2);
 
-            satScreenInfo.push({ name: satNames[i], x: position.x, y: position.y, leo: leo });
+            satScreenInfo.push({ name: satNames[i], x: position.x, y: position.y });
 
         }
 
@@ -196,17 +200,15 @@ function drawSats(canvas, zoom) {
 
 
 function parseTLEs() {
-
-    let start = new Date();
+ 
 
     let lines = TLE_DATA.split("\n");
-
-
 
     if (lines.length === 1) return;
 
     satPositions = [];
     satNames = [];
+    satInfo = [];
 
     for (let i = 0; i < lines.length; i += 3) {
 
@@ -222,16 +224,22 @@ function parseTLEs() {
 
         var positionAndVelocity = propagate(satrec, new Date(time.getTime()));
 
-        var ecfCoords = eciToEcf(positionAndVelocity.position, gstime(new Date()));
+        if (positionAndVelocity.position) {
+            var ecfCoords = eciToEcf(positionAndVelocity.position, gstime(new Date()));
 
-        satPositions.push(ecfCoords);
-        satNames.push(name);
+            satPositions.push(ecfCoords);
+            satNames.push(name);
+
+            var altitude = Math.sqrt(ecfCoords.x * ecfCoords.x + ecfCoords.y * ecfCoords.y + ecfCoords.z * ecfCoords.z);
+
+            var geo = eciToGeodetic(positionAndVelocity.position, gstime(new Date()));
+
+            var latitudeStr = degreesLat(geo),
+                longitudeStr = degreesLong(geo);
+
+            satInfo.push({ name: name, altitude: altitude, velocity: positionAndVelocity.velocity, longitude: longitudeStr, latitude: latitudeStr });
+        }
 
     }
-
-    let end = new Date();
-
-
-
 
 }

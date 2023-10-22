@@ -1,6 +1,9 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\components",
+    "\\utils"
   ],
+  "SelectedNode": "\\components\\Satellites.js",
   "PreviewInSolutionExplorer": false
 }
