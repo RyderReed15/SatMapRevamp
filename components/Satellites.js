@@ -199,8 +199,9 @@ function drawSats(canvas, zoom) {
 
 
 
-function parseTLEs() {
+async function parseTLEs() {
  
+    let start = new Date();
 
     let lines = TLE_DATA.split("\n");
 
@@ -229,17 +230,13 @@ function parseTLEs() {
 
             satPositions.push(ecfCoords);
             satNames.push(name);
-
-            var altitude = Math.sqrt(ecfCoords.x * ecfCoords.x + ecfCoords.y * ecfCoords.y + ecfCoords.z * ecfCoords.z);
-
-            var geo = eciToGeodetic(positionAndVelocity.position, gstime(new Date()));
-
-            var latitudeStr = degreesLat(geo),
-                longitudeStr = degreesLong(geo);
-
-            satInfo.push({ name: name, altitude: altitude, velocity: positionAndVelocity.velocity, longitude: longitudeStr, latitude: latitudeStr });
+           
+            satInfo.push({ name: name, position: positionAndVelocity.position, velocity: positionAndVelocity.velocity });
         }
 
     }
+    let end = new Date();
+
+    console.log(end.getTime() - start.getTime());
 
 }

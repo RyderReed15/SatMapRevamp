@@ -20,6 +20,18 @@ const Stars = require("./assets/background.jpg");
 
 export default function App() {
 
+    return (
+        <View style={styles.container}>
+
+            <Sidebar />
+
+            <SpaceView/>
+        </View>
+    );
+}
+
+
+function SpaceView() {
 
     const { height, width } = useWindowDimensions();
 
@@ -29,7 +41,7 @@ export default function App() {
     let [roll, setRoll] = useState(Math.PI / 2);
     let [yaw, setYaw] = useState(0);
 
-    
+
 
     const handleScroll = (e) => {
 
@@ -93,26 +105,14 @@ export default function App() {
         };
     }, []);
 
-
-
-
     return (
         <View style={styles.container}>
-
-            <Sidebar />
-
             <Earth style={{ position: 'absolute' }} hd={hd} height={height} zoom={zoom} yaw={yaw} roll={roll} />
 
             <Satellites style={styles.satellite} zoom={zoom} roll={roll} yaw={yaw} />
         </View>
     );
 }
-
-
-
-
-
-
 
 
 const styles = StyleSheet.create({
