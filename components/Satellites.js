@@ -12,14 +12,12 @@ const EARTH_RADIUS = 6378.14; // Earth radius in km
 
 let TLE_DATA = "";
 
-getTLEData();
-
-let satPositions = [];
 let satScreenInfo = [];
-let satNames = [];
 let satInfo = [];
+let satRecords = [];
 
-setInterval(parseTLEs, 1000);
+setInterval(propogateData, 1000);
+initialize();
 
 export default function Satellites(props) {
 
@@ -43,6 +41,10 @@ export default function Satellites(props) {
 }
 
 
+async function initialize() {
+    await getTLEData();
+    parseTLEs();
+}
 
 
 export function getSatInfo() {
@@ -65,10 +67,8 @@ function updateView(interval) {
 
 
 function cameraTransform(roll, yaw, x, y, z) {
-    //let pitch = 3.14159268, yaw =  1.5707963267948966192313216916398; // RADIANS
 
     let transform = { x, y, z };
-
 
     //View transform
     transform.x = (x * Math.cos(yaw) + y * Math.sin(yaw));
@@ -130,9 +130,9 @@ function transformCoords(zoom, roll, yaw, height, width) {
 
 
 
-    for (let i = 0; i < satPositions.length; i++) {
+    for (let i = 0; i < satInfo.length; i++) {
 
-        let position = cameraTransform(roll, yaw, satPositions[i].x, satPositions[i].y, satPositions[i].z);
+        let position = cameraTransform(roll, yaw, satInfo[i].position.x, satInfo[i].position.y, satInfo[i].position.z);
 
 
 
@@ -144,7 +144,7 @@ function transformCoords(zoom, roll, yaw, height, width) {
             position.x = Math.floor(position.x + width / 2);
             position.y = Math.floor(position.y + height / 2);
 
-            satScreenInfo.push({ name: satNames[i], x: position.x, y: position.y });
+            satScreenInfo.push({ name: satInfo[i].name, x: position.x, y: position.y });
 
         }
 
@@ -197,9 +197,28 @@ function drawSats(canvas, zoom) {
 }
 
 
+function propogateData() {
+
+    satInfo = [];
+    
+    for (let i = 0; i < satRecords.length; i ++) {
+
+        let time = new Date();
+
+        var positionAndVelocity = propagate(satRecords[i].satrec, time);
+
+        if (positionAndVelocity.position) {
+            var ecfCoords = eciToEcf(positionAndVelocity.position, gstime(time));
 
 
-async function parseTLEs() {
+            satInfo.push({ name: satRecords[i].name, position: ecfCoords, velocity: positionAndVelocity.velocity });
+        }
+
+    }   
+   
+}
+
+function parseTLEs() {
  
     let start = new Date();
 
@@ -207,9 +226,7 @@ async function parseTLEs() {
 
     if (lines.length === 1) return;
 
-    satPositions = [];
-    satNames = [];
-    satInfo = [];
+    satRecords = [];
 
     for (let i = 0; i < lines.length; i += 3) {
 
@@ -221,19 +238,8 @@ async function parseTLEs() {
 
         var satrec = twoline2satrec(tle1, tle2);
 
-        let time = new Date();
-
-        var positionAndVelocity = propagate(satrec, new Date(time.getTime()));
-
-        if (positionAndVelocity.position) {
-            var ecfCoords = eciToEcf(positionAndVelocity.position, gstime(new Date()));
-
-            satPositions.push(ecfCoords);
-            satNames.push(name);
-           
-            satInfo.push({ name: name, position: positionAndVelocity.position, velocity: positionAndVelocity.velocity });
-        }
-
+        satRecords.push({ name: name, satrec: satrec });
+        
     }
     let end = new Date();
 

@@ -35,7 +35,7 @@ export default function Sidebar() {
         };
     }, []);
 
-    const [page, setPage] = useState(1);
+    const [page, setPage] = useState(0);
 
 
     return (
@@ -44,7 +44,7 @@ export default function Sidebar() {
 
             <View>
                 <Text style={[styles.satText, {alignSelf: 'flex-end', paddingBottom: '.5em'}] }>
-                    Page {page} - Showing {page * PAGE_SIZE + 1} - {(page + 1) * PAGE_SIZE} of {satInfo.length }
+                    Page {page} - Showing {page * PAGE_SIZE + 1} - {(page + 1) * PAGE_SIZE} of {satInfo.length + 1 }
                 </Text>
             </View>
 
