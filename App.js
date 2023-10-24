@@ -1,4 +1,4 @@
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Image } from 'react-native';
 
 import { useState, useEffect } from 'react';
 
@@ -11,9 +11,6 @@ import Earth from "./components/Earth.js";
 
 import Sidebar from './components/Sidebar.js'; 
 
-
-
-
 const Stars = require("./assets/background.jpg");
 
 
@@ -23,9 +20,11 @@ export default function App() {
     return (
         <View style={styles.container}>
 
-            <Sidebar />
+            <Image source={Stars} style={{ position: 'absolute', top: 0, width: '100vw', height: '100vh' }} / >
 
-            <SpaceView/>
+            <Sidebar  />
+
+            <SpaceView style={{ zIndex: 2 }}/>
         </View>
     );
 }
@@ -41,8 +40,6 @@ function SpaceView() {
     let [roll, setRoll] = useState(Math.PI / 2);
     let [yaw, setYaw] = useState(0);
 
-
-
     const handleScroll = (e) => {
 
         if (e.target.id != "satellite_canvas") return;
@@ -50,16 +47,7 @@ function SpaceView() {
         zoom = zoom * (1 + e.wheelDelta / 900);
         zoom = (zoom > 1000 ? 1000 : (zoom < 10 ? 10 : zoom));
         setZoom(zoom);
-        styles.circle = {
-            position: 'absolute',
-            backgroundColor: 'blue',
-            aspectRatio: 1,
-            width: `${zoom}vh`,
-            borderRadius: '50%',
-            transition: '25ms',
-            overflow: 'hidden'
-
-        };
+        
     };
 
     const handleMouseDown = (e) => {
@@ -106,7 +94,7 @@ function SpaceView() {
     }, []);
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, {backgroundColor:'#00000000'}]}>
             <Earth style={{ position: 'absolute' }} hd={hd} height={height} zoom={zoom} yaw={yaw} roll={roll} />
 
             <Satellites style={styles.satellite} zoom={zoom} roll={roll} yaw={yaw} />
@@ -124,17 +112,5 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         overflow: 'hidden',
-        backgroundImage: `url(${Stars})`,
-        backgroundSize: 'cover',
-        backgroundRepeat: 'no-repeat',
-    },
-    circle: {
-        position: 'absolute',
-        backgroundColor: 'blue',
-        aspectRatio: 1,
-        width: '75vh',
-        borderRadius: '50%',
-        overflow: 'hidden'
-    },
-    
+    }   
 });

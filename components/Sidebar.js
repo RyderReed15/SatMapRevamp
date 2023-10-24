@@ -6,6 +6,7 @@ import { gstime, eciToEcf, propagate, twoline2satrec, eciToGeodetic, degreesLat,
 
 
 import { getSatInfo } from "./Satellites.js";
+import Button from './Button.js';
 
 
 
@@ -15,6 +16,11 @@ const EARTH_RADIUS = 6378.14; // Earth radius in km
 let satInfoIndex = 0;
 
 let satInfo = [];
+
+import LeftChevron from '../assets/bx-chevron-left.svg';
+import RightChevron from '../assets/bx-chevron-right.svg';
+import DoubleLeftChevron from '../assets/bx-chevrons-left.svg';
+import DoubleRightChevron from '../assets/bx-chevrons-right.svg';
 
 export default function Sidebar() {
 
@@ -37,15 +43,31 @@ export default function Sidebar() {
 
     const [page, setPage] = useState(0);
 
+    const changePage = (pageNum) => {
+        if (pageNum < 0) {
+            setPage(0);
+        } else if (pageNum > satInfo.length / PAGE_SIZE) {
+            setPage(Math.floor(satInfo.length / PAGE_SIZE));
+        }else{
+            setPage(pageNum);
+        }
+    }
+
 
     return (
         <View style={styles.sidebar} >
             <SatInfo />
 
-            <View>
-                <Text style={[styles.satText, {alignSelf: 'flex-end', paddingBottom: '.5em'}] }>
-                    Page {page} - Showing {page * PAGE_SIZE + 1} - {(page + 1) * PAGE_SIZE} of {satInfo.length + 1 }
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: '1em' } }>
+                <Text style={[styles.satText, { alignSelf: 'center', paddingTop: 0 }]}>
+                    {page * PAGE_SIZE + 1} - {(page + 1) * PAGE_SIZE > satInfo.length ? satInfo.length + 1 : (page + 1) * PAGE_SIZE} of {satInfo.length + 1 }
                 </Text>
+                <View style={{ flexDirection: 'row' }} >
+                    <Button style={styles.button} svg={DoubleLeftChevron}   iconStyle={styles.buttonIcon} onClick={() => changePage(0)} />
+                    <Button style={styles.button} svg={LeftChevron}         iconStyle={styles.buttonIcon} onClick={() => changePage(page - 1)} />
+                    <Button style={styles.button} svg={RightChevron}        iconStyle={styles.buttonIcon} onClick={() => changePage(page + 1)} />
+                    <Button style={styles.button} svg={DoubleRightChevron}  iconStyle={styles.buttonIcon} onClick={() => changePage(satInfo.length)} />
+                </View>
             </View>
 
             <View style={styles.satInfoContainer}>
@@ -134,11 +156,7 @@ function updateView(interval) {
 }
 
 
-
-
 function getListEntries(satInfo, page = 0) {
-
-
 
     let entries = [];
 
@@ -147,12 +165,10 @@ function getListEntries(satInfo, page = 0) {
 
             var altitude = Math.sqrt(satInfo[i].position.x * satInfo[i].position.x + satInfo[i].position.y * satInfo[i].position.y + satInfo[i].position.z * satInfo[i].position.z);
 
-            entries.push(<SatelliteInfo style={[styles.border, i > page * PAGE_SIZE ? { borderTopStyle: 'solid' } : {}]} key={i * 2 - 1} name={satInfo[i].name} altitude={altitude} onClick={() => { satInfoIndex = i; }} />);
+            entries.push(<SatelliteInfo style={[styles.border, i > page * PAGE_SIZE ? { borderTopStyle: 'solid' } : {}]} key={i} name={satInfo[i].name} altitude={altitude} onClick={() => { satInfoIndex = i; }} />);
 
         }
     }
-
-
 
     return entries;
 
@@ -250,5 +266,18 @@ const styles = StyleSheet.create({
         color: '#ccc',
         fontSize: '1em'
 
+    },
+    button: {
+        width: '2em',
+        height: '2em',
+        fontSize: '1em',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 4,
+        borderWidth: 1,
+        borderColor: '#CCC'
+    },
+    buttonIcon: {
+        fill: '#ccc'
     }
 });

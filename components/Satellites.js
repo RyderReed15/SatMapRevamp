@@ -7,8 +7,9 @@ import { useRef, useState, useEffect } from 'react';
 import useWindowDimensions from "../utils/Window.js";
 
 
-const TLE_INFO = require('../assets/TLE_EXAMPLE.txt');
+const TLE_INFO = require('../assets/TLE_EXAMPLE.json');
 const EARTH_RADIUS = 6378.14; // Earth radius in km
+const UPDATE_INTERVAL = 1000;
 
 let TLE_DATA = "";
 
@@ -16,14 +17,17 @@ let satScreenInfo = [];
 let satInfo = [];
 let satRecords = [];
 
-setInterval(propogateData, 1000);
+
+
+setInterval(propogateData, UPDATE_INTERVAL);
 initialize();
 
 export default function Satellites(props) {
 
-    updateView(1000);
+    updateView(UPDATE_INTERVAL);
 
     const { height, width } = useWindowDimensions();
+
 
 
     const canvasRef = useRef(null);
@@ -82,9 +86,7 @@ function cameraTransform(roll, yaw, x, y, z) {
 
 async function getTLEData() {
 
-    let response = await fetch(TLE_INFO);
-
-    TLE_DATA = "" + await response.text();
+    TLE_DATA = "" + TLE_INFO.data
 
 }
 
@@ -120,15 +122,9 @@ async function getTLE() {
 
 function transformCoords(zoom, roll, yaw, height, width) {
 
-
-
-
     const divisor = EARTH_RADIUS / (height * zoom / 200);
 
-
     satScreenInfo = []
-
-
 
     for (let i = 0; i < satInfo.length; i++) {
 
@@ -235,10 +231,19 @@ function parseTLEs() {
             tle2 = lines[i + 2];
 
 
+        try {
+            var satrec = twoline2satrec(tle1, tle2);
 
-        var satrec = twoline2satrec(tle1, tle2);
-
-        satRecords.push({ name: name, satrec: satrec });
+            satRecords.push({ name: name, satrec: satrec });
+        } catch {
+            if (lines.length % 3 != 0) {
+                console.log("Improperly formatted TLE file");
+            } else {
+                console.log("Error in sat record at line ", i)
+            }
+            
+        }
+       
         
     }
     let end = new Date();
