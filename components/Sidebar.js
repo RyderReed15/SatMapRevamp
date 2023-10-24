@@ -58,7 +58,7 @@ export default function Sidebar() {
         <View style={styles.sidebar} >
             <SatInfo />
 
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: '1em' } }>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', margin: '.5em' } }>
                 <Text style={[styles.satText, { alignSelf: 'center', paddingTop: 0 }]}>
                     {page * PAGE_SIZE + 1} - {(page + 1) * PAGE_SIZE > satInfo.length ? satInfo.length + 1 : (page + 1) * PAGE_SIZE} of {satInfo.length + 1 }
                 </Text>
@@ -132,8 +132,8 @@ function SatInfo() {
                     </tr>
 
                     <tr>
-                        <td style={styles.satText}>{(displayInfo.longitude).toFixed(2)}°</td>
-                        <td style={styles.satText}>{(displayInfo.latitude).toFixed(2)}°</td>
+                        <td style={styles.satText}>{(displayInfo.longitude).toFixed(2)}&#176;</td>
+                        <td style={styles.satText}>{(displayInfo.latitude).toFixed(2)}&#176;</td>
                     </tr>
                 </tbody>
 

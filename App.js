@@ -11,7 +11,12 @@ import Earth from "./components/Earth.js";
 
 import Sidebar from './components/Sidebar.js'; 
 
+import Button from './components/Button.js';
+
 const Stars = require("./assets/background.jpg");
+
+import MapImage from './assets/bxs-image.svg';
+
 
 
 
@@ -34,7 +39,7 @@ function SpaceView() {
 
     const { height, width } = useWindowDimensions();
 
-    let [hd, setHD] = useState(false);
+    let [map, setMap] = useState(0);
     let [zoom, setZoom] = useState(75);
     let [mouseDown, setMouseDown] = useState(false);
     let [roll, setRoll] = useState(Math.PI / 2);
@@ -52,7 +57,6 @@ function SpaceView() {
 
     const handleMouseDown = (e) => {
         if (e.target.id != "satellite_canvas") return;
-
         mouseDown = true;
         setMouseDown(true);
     };
@@ -94,8 +98,11 @@ function SpaceView() {
     }, []);
 
     return (
-        <View style={[styles.container, {backgroundColor:'#00000000'}]}>
-            <Earth style={{ position: 'absolute' }} hd={hd} height={height} zoom={zoom} yaw={yaw} roll={roll} />
+        <View style={[styles.container, { backgroundColor: '#00000000' }]}>
+
+            <Button style={styles.changeMap} svg={MapImage} iconStyle={styles.buttonIcon} onClick={() => setMap(!map)} />
+
+            <Earth style={{ position: 'absolute' }} map={map} height={height} zoom={zoom} yaw={yaw} roll={roll} />
 
             <Satellites style={styles.satellite} zoom={zoom} roll={roll} yaw={yaw} />
         </View>
@@ -112,5 +119,21 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         overflow: 'hidden',
-    }   
+    },
+    changeMap: {
+        zIndex: 1,
+        width: '4em',
+        height: '4em',
+        fontSize: '1em',
+        borderRadius: 15,
+        borderColor: '#CCC',
+        position: 'absolute',
+        top: '.5em',
+        right: '.5em',
+        alignSelf: 'flex-end'
+    },
+    buttonIcon: {
+        width: '4em',
+        fill: '#ccc'
+    }
 });
