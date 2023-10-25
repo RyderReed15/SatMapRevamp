@@ -122,25 +122,22 @@ function SatInfo() {
                 <Text style={styles.satText}>Velocity:</Text>
                 <Text style={styles.satText}>{(displayInfo.velocity * 1000).toFixed(2)} m/s</Text>
             </View>
-
-
-            <table style={{ width: '75%' }}>
-                <tbody>
-                    <tr>
-                        <td style={styles.satText}>Longitude:</td>
-                        <td style={styles.satText}>Latitude:</td>
-                    </tr>
-
-                    <tr>
-                        <td style={styles.satText}>{(displayInfo.longitude).toFixed(2)}&#176;</td>
-                        <td style={styles.satText}>{(displayInfo.latitude).toFixed(2)}&#176;</td>
-                    </tr>
-                </tbody>
-
-            </table>
+            <View style={{ width: '75%', flexDirection: 'row', justifyContent: 'space-between' }}>
+                <Text style={styles.satText}>Longitude:</Text>
+                <Text style={styles.satText}>{(displayInfo.longitude).toFixed(2)}&#176;</Text>
+            </View>
+            <View style={{ width: '75%', flexDirection: 'row', justifyContent: 'space-between' }}>
+                <Text style={styles.satText}>Latitude:</Text>
+                <Text style={styles.satText}>{(displayInfo.latitude).toFixed(2)}&#176;</Text>
+            </View>                      
+                    
         </View>
       
     );
+}
+
+export function setSatIndex(index) {
+    satInfoIndex = index;
 }
 
 function updateView(interval) {
@@ -233,10 +230,10 @@ const styles = StyleSheet.create({
     sidebar: {
         maxHeight: '100vh',
         zIndex: 1,
-        position: 'absolute',
+        position: 'absolute', /*remove to offset by sidebar*/
         top: 0,
         left: 0,
-        width: '15%',
+        width: '18em',
         backgroundColor: '#111',
         overflow: 'hidden'
     },
@@ -268,8 +265,8 @@ const styles = StyleSheet.create({
 
     },
     button: {
-        width: '2em',
-        height: '2em',
+        width: '1.75em',
+        height: '1.75em',
         fontSize: '1em',
         alignItems: 'center',
         justifyContent: 'center',

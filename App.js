@@ -15,7 +15,9 @@ import Button from './components/Button.js';
 
 const Stars = require("./assets/background.jpg");
 
-import MapImage from './assets/bxs-image.svg';
+import MapImage from './assets/bx-globe.svg';
+import ZoomIn from './assets/bxs-zoom-in.svg';
+import ZoomOut from './assets/bxs-zoom-out.svg';
 
 
 
@@ -29,7 +31,7 @@ export default function App() {
 
             <Sidebar  />
 
-            <SpaceView style={{ zIndex: 2 }}/>
+            <SpaceView/>
         </View>
     );
 }
@@ -45,14 +47,17 @@ function SpaceView() {
     let [roll, setRoll] = useState(Math.PI / 2);
     let [yaw, setYaw] = useState(0);
 
+    const changeZoom = (changeBy) => {
+        zoom *= changeBy;
+        zoom = (zoom > 1000 ? 1000 : (zoom < 10 ? 10 : zoom));
+        setZoom(zoom);
+    }
+
     const handleScroll = (e) => {
 
         if (e.target.id != "satellite_canvas") return;
 
-        zoom = zoom * (1 + e.wheelDelta / 900);
-        zoom = (zoom > 1000 ? 1000 : (zoom < 10 ? 10 : zoom));
-        setZoom(zoom);
-        
+        changeZoom(1 + e.wheelDelta / 900);
     };
 
     const handleMouseDown = (e) => {
@@ -102,6 +107,9 @@ function SpaceView() {
 
             <Button style={styles.changeMap} svg={MapImage} iconStyle={styles.buttonIcon} onClick={() => setMap(!map)} />
 
+            <Button style={styles.zoomButton}                       svg={ZoomIn}    iconStyle={styles.buttonIcon} onClick={() => changeZoom(1.3)} />
+            <Button style={[styles.zoomButton, { right: '2.5em' }]} svg={ZoomOut}   iconStyle={styles.buttonIcon} onClick={() => changeZoom(1/1.3)} />
+
             <Earth style={{ position: 'absolute' }} map={map} height={height} zoom={zoom} yaw={yaw} roll={roll} />
 
             <Satellites style={styles.satellite} zoom={zoom} roll={roll} yaw={yaw} />
@@ -119,6 +127,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         overflow: 'hidden',
+        flexDirection: 'row'
     },
     changeMap: {
         zIndex: 1,
@@ -132,8 +141,20 @@ const styles = StyleSheet.create({
         right: '.5em',
         alignSelf: 'flex-end'
     },
+    zoomButton: {
+        zIndex: 1,
+        width: '2em',
+        height: '2em',
+        fontSize: '1em',
+        borderRadius: 15,
+        borderColor: '#CCC',
+        position: 'absolute',
+        bottom: '.5em',
+        right: '.5em',
+        alignSelf: 'flex-end'
+    },
     buttonIcon: {
-        width: '4em',
+        width: '100%',
         fill: '#ccc'
     }
 });

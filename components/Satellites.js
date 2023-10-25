@@ -5,6 +5,7 @@ import { gstime, eciToEcf, propagate, twoline2satrec, eciToGeodetic, degreesLat,
 import { useRef, useState, useEffect } from 'react';
 
 import useWindowDimensions from "../utils/Window.js";
+import { setSatIndex } from './Sidebar.js';
 
 
 const TLE_INFO = require('../assets/TLE_EXAMPLE.json');
@@ -16,6 +17,7 @@ let TLE_DATA = "";
 let satScreenInfo = [];
 let satInfo = [];
 let satRecords = [];
+let clickIndices = [[]];
 
 
 
@@ -40,7 +42,7 @@ export default function Satellites(props) {
         drawSats(canvas, props.zoom);
     });
     return (
-        <canvas id="satellite_canvas" style={{ position: 'absolute', top: 0, left: 0 }} ref={canvasRef} width={width} height={height} />
+        <canvas id="satellite_canvas" style={{ position: 'absolute', top: 0, left: '0em' /*-9em to offset by sidebar*/ }} ref={canvasRef} width={width} height={height} />
     );
 }
 
@@ -86,7 +88,7 @@ function cameraTransform(roll, yaw, x, y, z) {
 
 async function getTLEData() {
 
-    TLE_DATA = "" + TLE_INFO.data
+    TLE_DATA = TLE_INFO.data
 
 }
 
@@ -118,9 +120,18 @@ async function getTLE() {
     }
 }
 
+function fillScreenIndices(width, height) {
+    clickIndices = [[]];
+
+    for (let i = 0; i < width; i++) {
+        clickIndices.push(Array(height).fill(-1, 0, height-1));
+    }
+}
 
 
 function transformCoords(zoom, roll, yaw, height, width) {
+
+    fillScreenIndices(width, height);
 
     const divisor = EARTH_RADIUS / (height * zoom / 200);
 
@@ -132,7 +143,7 @@ function transformCoords(zoom, roll, yaw, height, width) {
 
 
 
-        if (position.z >= 0 || Math.sqrt(position.x * position.x + position.y * position.y) > EARTH_RADIUS) {
+        if (position.z > 0 || Math.sqrt(position.x * position.x + position.y * position.y) > EARTH_RADIUS) {
 
             position.x /= divisor;
             position.y /= -divisor;
@@ -140,22 +151,34 @@ function transformCoords(zoom, roll, yaw, height, width) {
             position.x = Math.floor(position.x + width / 2);
             position.y = Math.floor(position.y + height / 2);
 
-            satScreenInfo.push({ name: satInfo[i].name, x: position.x, y: position.y });
+            satScreenInfo.push({ name: satInfo[i].name, x: position.x, y: position.y, z: position.z });
 
+            if (position.x > 0 && position.y > 0) {
+
+                let size = Math.floor(Math.ceil(Math.log(zoom) - 2) * 1.33);
+                size = size < 1 ? 1 : size;
+
+                let startX  = (position.x - 2) >= 0             ? position.x - 2        : 0;
+                let endX    = (position.x + size + 2) < width   ? position.x + size + 2 : width - 1;
+                let startY  = (position.y - 2) >= 0             ? position.y - 2        : 0;
+                let endY    = (position.y + size + 2) < height  ? position.y + size + 2 : height - 1;
+
+                for (let j = startX; j <= endX; j++) {
+                    clickIndices[j].fill(i, startY, endY);
+                }
+            }
         }
-
     }
 }
 
 export function handleClick(x, y) {
-    for (let i = 0; i < satScreenInfo.length; i++) {
-        if (x >= satScreenInfo[i].x && x <= satScreenInfo[i].x + 2 && y >= satScreenInfo[i].y && y <= satScreenInfo[i].y + 2) {
+    let index = clickIndices[x][y];
 
-            alert(satScreenInfo[i].name);
-        }
-
-
+    if (index != -1) {
+        setSatIndex(index);
+       
     }
+    
 }
 
 function drawSats(canvas, zoom) {
@@ -165,7 +188,7 @@ function drawSats(canvas, zoom) {
     context.clearRect(0, 0, canvas.width, canvas.height);
 
     context.fillStyle = '#fff';
-    context.font = "14px Helvetica";
+    context.font = "14px Segoe UI";
 
     let size = Math.floor(Math.ceil(Math.log(zoom) - 2) * 1.33);
     size = size < 1 ? 1 : size;
