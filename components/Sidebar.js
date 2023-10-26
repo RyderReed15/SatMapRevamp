@@ -5,17 +5,13 @@ import { useState, useEffect } from 'react';
 import { gstime, eciToEcf, propagate, twoline2satrec, eciToGeodetic, degreesLat, degreesLong } from 'satellite.js';
 
 
-import { getSatInfo } from "./Satellites.js";
+import { getPropagatedData, getScreenInfo, getSelectedIndex, setSelectedIndex } from "./Satellites.js";
 import Button from './Button.js';
 
 
 
 const PAGE_SIZE = 100;
 const EARTH_RADIUS = 6378.14; // Earth radius in km
-
-let satInfoIndex = 0;
-
-let satInfo = [];
 
 import LeftChevron from '../assets/bx-chevron-left.svg';
 import RightChevron from '../assets/bx-chevron-right.svg';
@@ -25,6 +21,8 @@ import DoubleRightChevron from '../assets/bx-chevrons-right.svg';
 export default function Sidebar() {
 
     const [count, setCount] = useState(0);
+
+    const satInfo = getPropagatedData()
 
     useEffect(() => {
         const id = setInterval(() => {
@@ -90,19 +88,20 @@ function SatInfo() {
         latitude: 0
     });
 
-    satInfo = getSatInfo();
+    let satInfo = getPropagatedData();
+    let satIndex = getSelectedIndex();
 
     if (satInfo && satInfo.length) {
-        var altitude = Math.sqrt(satInfo[satInfoIndex].position.x * satInfo[satInfoIndex].position.x + satInfo[satInfoIndex].position.y * satInfo[satInfoIndex].position.y + satInfo[satInfoIndex].position.z * satInfo[satInfoIndex].position.z);
-        var velocity = Math.sqrt(satInfo[satInfoIndex].velocity.x * satInfo[satInfoIndex].velocity.x + satInfo[satInfoIndex].velocity.y * satInfo[satInfoIndex].velocity.y + satInfo[satInfoIndex].velocity.z * satInfo[satInfoIndex].velocity.z);
+        var altitude = Math.sqrt(satInfo[satIndex].position.x * satInfo[satIndex].position.x + satInfo[satIndex].position.y * satInfo[satIndex].position.y + satInfo[satIndex].position.z * satInfo[satIndex].position.z);
+        var velocity = Math.sqrt(satInfo[satIndex].velocity.x * satInfo[satIndex].velocity.x + satInfo[satIndex].velocity.y * satInfo[satIndex].velocity.y + satInfo[satIndex].velocity.z * satInfo[satIndex].velocity.z);
 
-        var geo = eciToGeodetic(satInfo[satInfoIndex].position, gstime(new Date()));
+        var geo = eciToGeodetic(satInfo[satIndex].position, gstime(new Date()));
 
         var latitudeStr = degreesLat(geo.latitude),
             longitudeStr = degreesLong(geo.longitude);
 
         displayInfo = {
-            name: satInfo[satInfoIndex].name,
+            name: satInfo[satIndex].name,
             altitude: altitude,
             velocity: velocity,
             longitude: longitudeStr,
@@ -136,10 +135,6 @@ function SatInfo() {
     );
 }
 
-export function setSatIndex(index) {
-    satInfoIndex = index;
-}
-
 function updateView(interval) {
     const [count, setCount] = useState(0);
 
@@ -162,7 +157,7 @@ function getListEntries(satInfo, page = 0) {
 
             var altitude = Math.sqrt(satInfo[i].position.x * satInfo[i].position.x + satInfo[i].position.y * satInfo[i].position.y + satInfo[i].position.z * satInfo[i].position.z);
 
-            entries.push(<SatelliteInfo style={[styles.border, i > page * PAGE_SIZE ? { borderTopStyle: 'solid' } : {}]} key={i} name={satInfo[i].name} altitude={altitude} onClick={() => { satInfoIndex = i; }} />);
+            entries.push(<SatelliteInfo style={[styles.border, i > page * PAGE_SIZE ? { borderTopStyle: 'solid' } : {}]} key={i} name={satInfo[i].name} altitude={altitude} onClick={() => { setSelectedIndex(i); }} />);
 
         }
     }
@@ -244,7 +239,7 @@ const styles = StyleSheet.create({
     },
     satInfo: {
 
-        maxHeight: '25vh',
+        minHeight: '10em',
         height: '10em',
 
         borderWidth: '1px',

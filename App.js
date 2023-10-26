@@ -2,10 +2,11 @@ import { StyleSheet, View, Image } from 'react-native';
 
 import { useState, useEffect } from 'react';
 
-
 import useWindowDimensions from "./utils/Window.js";
 
-import Satellites, { handleClick } from "./components/Satellites.js";
+import SatelliteCanvas, { handleClick } from "./components/SatelliteCanvas.js";
+
+import { getPropagatedData, getScreenInfo, getSelectedIndex, setSelectedIndex, propagateData, initialize, transformCoords } from "./components/Satellites.js";
 
 import Earth from "./components/Earth.js";
 
@@ -21,6 +22,9 @@ import ZoomOut from './assets/bxs-zoom-out.svg';
 
 
 
+initializeApp();
+setInterval(update, 1000);
+
 
 export default function App() {
 
@@ -34,6 +38,15 @@ export default function App() {
             <SpaceView/>
         </View>
     );
+}
+
+function initializeApp() {
+    initialize();
+
+}
+
+function update() {
+    propagateData();
 }
 
 
@@ -112,7 +125,7 @@ function SpaceView() {
 
             <Earth style={{ position: 'absolute' }} map={map} height={height} zoom={zoom} yaw={yaw} roll={roll} />
 
-            <Satellites style={styles.satellite} zoom={zoom} roll={roll} yaw={yaw} />
+            <SatelliteCanvas style={styles.satellite} zoom={zoom} roll={roll} yaw={yaw} />
         </View>
     );
 }
