@@ -22,16 +22,13 @@ export default function Earth(props) {
     return (
         <Canvas orthographic camera={{ far: 20000 }} style={{ height: `${props.height}px` }}>
 
-
             <mesh position={[0, 0, -20000]} rotation={[-props.roll + Math.PI / 2, -props.yaw, 0]}>
 
                 <sphereGeometry args={[props.zoom * props.height / 200, 32, 32]} />
 
-
                 <meshStandardMaterial color="#ddd" map={map} />
 
             </mesh>
-
 
             <ambientLight />
 

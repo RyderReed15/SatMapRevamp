@@ -12,7 +12,7 @@ const TLE_INFO = require('../assets/TLE_EXAMPLE.json');
 const EARTH_RADIUS = 6378.14; // Earth radius in km
 const UPDATE_INTERVAL = 1000;
 
-let TLE_DATA = "";
+let TLE_DATA = TLE_INFO.data;
 
 let satScreenInfo = [];
 let satInfo = [];
@@ -48,7 +48,7 @@ export default function Satellites(props) {
 
 
 async function initialize() {
-    await getTLEData();
+    await TLE_DATA;
     parseTLEs();
 }
 
@@ -85,17 +85,6 @@ function cameraTransform(roll, yaw, x, y, z) {
     return transform;
 }
 
-
-async function getTLEData() {
-
-    TLE_DATA = TLE_INFO.data
-
-}
-
-
-
-
-
 async function getTLE() {
 
     let url = 'https://celestrak.org/NORAD/elements/gp.php?GROUP=ACTIVE&FORMAT=TLE';
@@ -128,7 +117,6 @@ function fillScreenIndices(width, height) {
     }
 }
 
-
 function transformCoords(zoom, roll, yaw, height, width) {
 
     fillScreenIndices(width, height);
@@ -140,8 +128,6 @@ function transformCoords(zoom, roll, yaw, height, width) {
     for (let i = 0; i < satInfo.length; i++) {
 
         let position = cameraTransform(roll, yaw, satInfo[i].position.x, satInfo[i].position.y, satInfo[i].position.z);
-
-
 
         if (position.z > 0 || Math.sqrt(position.x * position.x + position.y * position.y) > EARTH_RADIUS) {
 
@@ -202,17 +188,12 @@ function drawSats(canvas, zoom) {
             context.fillStyle = '#fff';
         }*/
 
-
-
         if (zoom > 500) {
             context.fillText(satScreenInfo[i].name, satScreenInfo[i].x + 10, satScreenInfo[i].y + 8);
         }
 
         context.fillRect(satScreenInfo[i].x, satScreenInfo[i].y, size, size);
-
-
     }
-
 }
 
 
@@ -232,14 +213,10 @@ function propogateData() {
 
             satInfo.push({ name: satRecords[i].name, position: ecfCoords, velocity: positionAndVelocity.velocity });
         }
-
     }   
-   
 }
 
 function parseTLEs() {
- 
-    let start = new Date();
 
     let lines = TLE_DATA.split("\n");
 
@@ -253,7 +230,6 @@ function parseTLEs() {
             tle1 = lines[i + 1],
             tle2 = lines[i + 2];
 
-
         try {
             var satrec = twoline2satrec(tle1, tle2);
 
@@ -264,13 +240,6 @@ function parseTLEs() {
             } else {
                 console.log("Error in sat record at line ", i)
             }
-            
         }
-       
-        
     }
-    let end = new Date();
-
-    console.log(end.getTime() - start.getTime());
-
 }

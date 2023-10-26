@@ -173,14 +173,14 @@ function getListEntries(satInfo, page = 0) {
 
 function SatelliteInfo(props) {
 
+    const [hover, setHover] = useState(false);
 
     return (
-        <View style={[props.style, styles.satEntry]} onClick={props.onClick }>
+        <View style={[props.style, styles.satEntry, (hover ? styles.hover : {})]} onClick={props.onClick} onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
 
             <Text style={styles.infoText}>{props.name}</Text>
 
             {getAltitudeText(props.altitude)}
-
 
         </View>
     );
@@ -188,17 +188,11 @@ function SatelliteInfo(props) {
 
 function getAltitudeText(altitude) {
 
-    if (altitude - EARTH_RADIUS < 2000) {
-
-        return (<Text style={styles.leoText}>LEO</Text>);
-    } else if (altitude - EARTH_RADIUS < 35500) {
-        return (<Text style={styles.meoText}>MEO</Text>);
-
-    } else if (altitude - EARTH_RADIUS < 36000) {
-        return (<Text style={styles.geoText}>GEO</Text>);
-    } else {
-        return (<Text style={styles.infoText}>HEO</Text>);
-    }
+    if      (altitude - EARTH_RADIUS < 2000)    return (<Text style={styles.leoText} >LEO</Text>);
+    else if (altitude - EARTH_RADIUS < 35500)   return (<Text style={styles.meoText} >MEO</Text>);
+    else if (altitude - EARTH_RADIUS < 36000)   return (<Text style={styles.geoText} >GEO</Text>);
+    else                                        return (<Text style={styles.infoText}>HEO</Text>);
+    
 }
 
 const styles = StyleSheet.create({
@@ -213,6 +207,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'left',
         flexDirection: 'row',
+        cursor: 'pointer'
 
     },
     infoText: {
@@ -276,5 +271,8 @@ const styles = StyleSheet.create({
     },
     buttonIcon: {
         fill: '#ccc'
-    }
+    },
+    hover: {
+        backgroundColor: "#444"
+    },
 });
